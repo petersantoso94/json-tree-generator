@@ -46,8 +46,13 @@ const TreeComponent: React.FC<ITreeComponentProps> = ({ parent, treeChildren, le
   )
 }
 
+const RemoveDuplicate = (data: IJsonData) => {
+
+}
+
 const App = () => {
-  treeData = treeRecursive('0', [...treedata]);
+  let filteredArr = treedata.filter((v, i, a) => a.findIndex(t => (t.name === v.name && t.parent === v.parent)) === i)
+  treeData = treeRecursive('0', [...filteredArr]);
   const treeStructure = Object.keys(treeData).map(parent => (<TreeComponent key={0 + parent} parent={parent} treeChildren={treeData[parent]} level={0}></TreeComponent>))
 
   return (
