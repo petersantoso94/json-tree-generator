@@ -1,7 +1,5 @@
-import React from 'react';
-import treedata from './treedata.json';
+import React, { useState } from 'react';
 import './App.css';
-import LeafNode from './components/LeafNode';
 
 export interface IJsonData {
   parent: string;
@@ -46,18 +44,59 @@ const TreeComponent: React.FC<ITreeComponentProps> = ({ parent, treeChildren, le
   )
 }
 
-const RemoveDuplicate = (data: IJsonData) => {
-
-}
-
 const App = () => {
-  let filteredArr = treedata.filter((v, i, a) => a.findIndex(t => (t.name === v.name && t.parent === v.parent)) === i)
-  treeData = treeRecursive('0', [...filteredArr]);
-  const treeStructure = Object.keys(treeData).map(parent => (<TreeComponent key={0 + parent} parent={parent} treeChildren={treeData[parent]} level={0}></TreeComponent>))
+  // form input 
+  const [parentInput, setparentInput] = useState("")
+  const [treeInput, settreeInput] = useState<IJsonData[]>([])
+  const [printTree, setprintTree] = useState(false)
 
+  let treeStructure = null;
+  if (printTree && parentInput && treeInput && treeInput.length > 0) {
+    let filteredArr = treeInput.filter((v, i, a) => a.findIndex(t => (t.name === v.name && t.parent === v.parent)) === i)
+    let treeData = treeRecursive(parentInput, [...filteredArr]);
+    treeStructure = Object.keys(treeData).map(parent => (<TreeComponent key={0 + parent} parent={parent} treeChildren={treeData[parent]} level={0}></TreeComponent>))
+  }
+
+  const setTreeFunctionHandler = () => {
+    if (parentInput) {
+      setprintTree(true)
+    } else {
+      alert("Please set root id!")
+    }
+  }
+  const rootIdOnchangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (printTree) {
+      setprintTree(false);
+    }
+    setparentInput(event.target.value)
+  }
+  const jsonFileInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files![0]
+    if (!file || file.type !== "application/json") {
+      event.target.value = "";
+      alert("Please choose a valid file");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = onReaderLoad;
+    reader.readAsText(file);
+  }
+  const onReaderLoad = (event: any) => {
+    try {
+      let jsonObject: IJsonData[] = JSON.parse(event.target.result);
+      settreeInput(jsonObject);
+    } catch (error) {
+      alert(error)
+    }
+  }
   return (
     <div className="App">
-      {treeStructure}
+      Root id *: <input type="text" onChange={rootIdOnchangeHandler} value={parentInput}></input>
+      Json File *: <input type="file" onChange={jsonFileInputHandler} accept=".json"></input>
+      <button onClick={setTreeFunctionHandler}>Set Tree</button>
+      <div style={{ marginTop: '20px' }}>
+        {treeStructure}
+      </div>
     </div>
   );
 }
