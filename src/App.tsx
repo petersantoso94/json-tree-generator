@@ -6,8 +6,6 @@ export interface IJsonData {
   name: string;
 }
 
-let treeData: any = {};
-
 const treeRecursive = (parent: string, children: IJsonData[]) => {
   if (children.length === 0) {
     //stop the iteration
@@ -29,18 +27,27 @@ export interface ITreeComponentProps {
   level: number;
 }
 
+const parentToggleHandler = function (event: any) {
+  let getCurrentParent = event.target.parentElement.querySelector(".nested");
+  if (getCurrentParent) getCurrentParent.classList.toggle("active");
+  event.target.classList.toggle("caret-down");
+}
+
 const TreeComponent: React.FC<ITreeComponentProps> = ({ parent, treeChildren, level }) => {
   if (!treeChildren || treeChildren.length === 0) return (
-    <div style={{ marginLeft: `${level * 55}px` }}>
-      {parent}</div>
+    <li>
+      <span>{parent}</span>
+    </li>
   )
   const treeComponentRecur: any = [];
   treeChildren.forEach((child: any) => { Object.keys(child).forEach(tparent => treeComponentRecur.push((<TreeComponent parent={tparent} level={level + 1} treeChildren={child[tparent]} key={level + tparent}></TreeComponent>))) });
   return (
-    <div style={{ marginLeft: `${level * 55}px` }}>
-      {parent}
-      {treeComponentRecur}
-    </div>
+    <li>
+      <span className="caret" onClick={parentToggleHandler}>{parent} (child : {treeChildren.length})</span>
+      <ul className="nested">
+        {treeComponentRecur}
+      </ul>
+    </li>
   )
 }
 
@@ -94,9 +101,9 @@ const App = () => {
       Root id *: <input type="text" onChange={rootIdOnchangeHandler} value={parentInput}></input>
       Json File *: <input type="file" onChange={jsonFileInputHandler} accept=".json"></input>
       <button onClick={setTreeFunctionHandler}>Set Tree</button>
-      <div style={{ marginTop: '20px' }}>
+      <ul id="myUL">
         {treeStructure}
-      </div>
+      </ul>
     </div>
   );
 }
