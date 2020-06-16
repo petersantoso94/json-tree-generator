@@ -66,8 +66,8 @@ const TreeComponent: React.FC<ITreeComponentProps> = ({
     <li>
       <span className="caret" onClick={parentToggleHandler}>
         {parent} (child : {treeChildren.length})
-        <ul className="nested">{treeComponentRecur}</ul>
       </span>
+      <ul className="nested">{treeComponentRecur}</ul>
     </li>
   );
 };
@@ -137,27 +137,28 @@ const App = () => {
     if (searchText) {
       let spanTags = document.getElementsByTagName("span");
       let found: any | undefined = undefined;
+      let previousFound = document.querySelector(".border-yellow");
+      previousFound && previousFound.classList.remove("border-yellow");
       for (var i = 0; i < spanTags.length; i++) {
-        if (spanTags[i].innerHTML === searchText) {
-          let previousFound = document.querySelector(".border-yellow");
-          previousFound && previousFound.classList.remove("border-yellow");
+        if (spanTags[i].innerHTML.includes(searchText)) {
           found = spanTags[i];
           found.classList.add("border-yellow");
-          break;
-        }
-      }
-      var els = [];
-      while (found) {
-        els.unshift(found);
-        found = found.parentNode;
-        if (found && found.classList && found.classList.contains("nested")) {
-          found.classList.toggle("active");
-        } else if (
-          found &&
-          found.classList &&
-          found.classList.contains("caret")
-        ) {
-          found.classList.toggle("caret-down");
+          let els = [];
+          while (found) {
+            els.unshift(found);
+            found = found.parentNode;
+            if (found && found.classList && found.classList.contains("nested")) {
+              found.classList.add("active");
+            }
+            if (
+              found &&
+              found.childNodes[0] &&
+              found.childNodes[0].classList &&
+              found.childNodes[0].classList.contains("caret")
+            ) {
+              found.childNodes[0].classList.add("caret-down");
+            }
+          }
         }
       }
     }
@@ -189,8 +190,8 @@ const App = () => {
           <button onClick={findTreeHandler}>Search</button>
         </div>
       ) : (
-        <></>
-      )}
+          <></>
+        )}
       <ul id="myUL">{treeStructure}</ul>
     </div>
   );

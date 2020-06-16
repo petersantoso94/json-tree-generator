@@ -40,6 +40,6 @@ ul,
   display: block;
 }
 
-.border-yellow{
-  border: solid 0.3em red;
+.border-yellow {
+  border: solid 0.1em red;
 }
