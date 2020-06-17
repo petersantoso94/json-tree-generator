@@ -137,8 +137,9 @@ const App = () => {
     if (searchText) {
       let spanTags = document.getElementsByTagName("span");
       let found: any | undefined = undefined;
-      let previousFound = document.querySelector(".border-yellow");
-      previousFound && previousFound.classList.remove("border-yellow");
+      document.querySelectorAll(".border-yellow").forEach(previousFound => {
+        previousFound.classList.remove("border-yellow");
+      });
       for (var i = 0; i < spanTags.length; i++) {
         if (spanTags[i].innerHTML.includes(searchText)) {
           found = spanTags[i];
